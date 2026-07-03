@@ -55,18 +55,18 @@
       (move-toward! o b opp-speed)
       (let [near (nearest-tagged "ball" (get-x o) (get-y o) push-range)]
         (when (not= near -1)
-          (set-velocity! b (- (f32 0.0) opp-speed) (f32 0.0) (f32 0.0)))))))
+          (set-velocity! b (-f (f32 0.0) opp-speed) (f32 0.0) (f32 0.0)))))))
 
 ;; score: ball crossing either goal threshold scores for that side and
 ;; respawns the ball at center.
 (defsystem score [dt]
   (let [b (ball)]
     (when (not= b -1)
-      (when (< goal-x (get-x b))
-        (set-atom! score-right (+ score-right 1))
+      (when (<f goal-x (get-x b))
+        (set-atom! score-right (+ (atom-val score-right) 1))
         (set-position! b (f32 0.0) (f32 0.0) (f32 0.0))
         (set-velocity! b (f32 0.0) (f32 0.0) (f32 0.0)))
-      (when (< (get-x b) opp-goal-x)
-        (set-atom! score-left (+ score-left 1))
+      (when (<f (get-x b) opp-goal-x)
+        (set-atom! score-left (+ (atom-val score-left) 1))
         (set-position! b (f32 0.0) (f32 0.0) (f32 0.0))
         (set-velocity! b (f32 0.0) (f32 0.0) (f32 0.0))))))

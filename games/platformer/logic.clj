@@ -47,7 +47,7 @@
       (let [hit (nearest-tagged "next" (get-x p) (get-y p) reach-range)]
         (when (not= hit -1)
           (despawn-entity hit)
-          (set-atom! seq-index (+ seq-index 1))
+          (set-atom! seq-index (+ (atom-val seq-index) 1))
           (let [remaining (nearest-tagged "platform" (f32 -1000.0) (f32 0.0) (f32 2000.0))]
             (when (not= remaining -1)
               (let [x (get-x remaining) y (get-y remaining)]
@@ -61,6 +61,6 @@
     (when (not= p -1)
       (let [h (nearest-tagged "hazard" (get-x p) (get-y p) hazard-range)]
         (when (not= h -1)
-          (set-atom! falls (+ falls 1))
+          (set-atom! falls (+ (atom-val falls) 1))
           (set-atom! seq-index 0)
           (set-position! p (f32 -800.0) (f32 0.0) (f32 0.0)))))))

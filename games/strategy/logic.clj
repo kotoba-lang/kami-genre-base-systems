@@ -36,15 +36,15 @@
 ;; economy: resource accrues automatically every econ-period ticks.
 (defsystem economy [dt]
   (when (zero? (mod (tick-n) econ-period))
-    (set-atom! resource (+ resource 1))))
+    (set-atom! resource (+ (atom-val resource) 1))))
 
 ;; build: proximity to the base spends resource and spawns a unit.
 (defsystem build [dt]
   (let [p (player)]
     (when (not= p -1)
       (let [b (nearest-tagged "base" (get-x p) (get-y p) build-range)]
-        (when (and (not= b -1) (< spend-cost (+ resource 1)) (< (count-tagged "unit") max-units))
-          (set-atom! resource (- resource spend-cost))
+        (when (and (not= b -1) (< spend-cost (+ (atom-val resource) 1)) (< (count-tagged "unit") max-units))
+          (set-atom! resource (- (atom-val resource) spend-cost))
           (let [u (spawn-entity "unit")]
             (set-position! u (get-x b) (get-y b) (f32 0.0))))))))
 
@@ -64,8 +64,8 @@
       (when (not= e -1)
         (despawn-entity e)
         (despawn-entity u)
-        (when (< 0 force-enemy)
-          (set-atom! force-enemy (- force-enemy 1)))))))
+        (when (< 0 (atom-val force-enemy))
+          (set-atom! force-enemy (- (atom-val force-enemy) 1)))))))
 
 ;; the enemy side reinforces on its own slower cadence, capped so it
 ;; doesn't runaway-spawn past a defender's ability to keep up.
@@ -81,9 +81,9 @@
 ;; win/lose: either garrison hitting zero ends the round -- both reset for
 ;; a new round rather than freezing forever.
 (defsystem round-check [dt]
-  (when (< force-player 1)
+  (when (< (atom-val force-player) 1)
     (set-atom! force-player 5)
     (set-atom! force-enemy 5))
-  (when (< force-enemy 1)
+  (when (< (atom-val force-enemy) 1)
     (set-atom! force-player 5)
     (set-atom! force-enemy 5)))

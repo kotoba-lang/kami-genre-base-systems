@@ -52,12 +52,12 @@
             (despawn-entity hit)
             (let [g (spawn-entity "grown")]
               (set-position! g x y (f32 0.0))
-              (set-atom! grown-count (+ grown-count 1)))))))))
+              (set-atom! grown-count (+ (atom-val grown-count) 1)))))))))
 
 ;; full-bloom milestone: once every dormant spot has been grown, count a
 ;; bloom cycle and reset so the garden can grow again.
 (defsystem bloom-check [dt]
-  (when (< max-dormant (+ grown-count 1))
+  (when (< max-dormant (+ (atom-val grown-count) 1))
     (when (zero? (count-tagged "dormant"))
-      (set-atom! bloom-cycles (+ bloom-cycles 1))
+      (set-atom! bloom-cycles (+ (atom-val bloom-cycles) 1))
       (set-atom! grown-count 0))))

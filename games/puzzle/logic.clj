@@ -42,13 +42,13 @@
 ;; the same 4 positions -- a genuinely different sequence to solve, not a
 ;; copy-pasted duplicate.
 (defn expected-x [step]
-  (if (= level 1)
+  (if (= (atom-val level) 1)
     (cond (= step 0) (f32 150.0) (= step 1) (f32 -150.0)
           (= step 2) (f32 -150.0) :else (f32 150.0))
     (cond (= step 0) (f32 150.0) (= step 1) (f32 -150.0)
           (= step 2) (f32 150.0) :else (f32 -150.0))))
 (defn expected-y [step]
-  (if (= level 1)
+  (if (= (atom-val level) 1)
     (cond (= step 0) (f32 150.0) (= step 1) (f32 150.0)
           (= step 2) (f32 -150.0) :else (f32 -150.0))
     (cond (= step 0) (f32 -150.0) (= step 1) (f32 150.0)
@@ -59,20 +59,20 @@
     (when (not= p -1)
       (let [tile (nearest-tagged "tile" (get-x p) (get-y p) touch-range)]
         (when (not= tile -1)
-          (if (and (= (get-x tile) (expected-x progress))
-                   (= (get-y tile) (expected-y progress)))
-            (set-atom! progress (mod (+ progress 1) num-tiles))
+          (if (and (= (get-x tile) (expected-x (atom-val progress)))
+                   (= (get-y tile) (expected-y (atom-val progress))))
+            (set-atom! progress (mod (+ (atom-val progress) 1) num-tiles))
             (set-atom! progress 0)))))))
 
 ;; level advance: completing num-tiles worth of correct touches (progress
 ;; wraps to 0 exactly on a full clean solve) promotes level 1 -> level 2
 ;; once, tracked by solves so it doesn't re-trigger every wrap.
 (defsystem level-advance [dt]
-  (when (zero? progress)
-    (when (< 0 solves)
-      (when (= level 1)
+  (when (zero? (atom-val progress))
+    (when (< 0 (atom-val solves))
+      (when (= (atom-val level) 1)
         (set-atom! level 2)))))
 
 (defsystem count-solve [dt]
-  (when (= progress (- num-tiles 1))
-    (set-atom! solves (+ solves 1))))
+  (when (= (atom-val progress) (- num-tiles 1))
+    (set-atom! solves (+ (atom-val solves) 1))))

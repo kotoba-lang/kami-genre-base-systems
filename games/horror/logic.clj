@@ -44,13 +44,13 @@
       (let [t (nearest-tagged "threat" (get-x p) (get-y p) detect-range)
             s (nearest-tagged "safe-zone" (get-x p) (get-y p) safe-range)]
         (if (not= t -1)
-          (when (< dread dread-max)
-            (set-atom! dread (+ dread 2)))
+          (when (< (atom-val dread) dread-max)
+            (set-atom! dread (+ (atom-val dread) 2)))
           (if (not= s -1)
-            (when (< 0 dread)
-              (set-atom! dread (- dread 3)))
-            (when (< 0 dread)
-              (set-atom! dread (- dread 1)))))))))
+            (when (< 0 (atom-val dread))
+              (set-atom! dread (- (atom-val dread) 3)))
+            (when (< 0 (atom-val dread))
+              (set-atom! dread (- (atom-val dread) 1)))))))))
 
 ;; rare random scare: low-probability roll every scare-check-period ticks
 ;; spawns a short-lived scare entity near the player.
@@ -64,9 +64,9 @@
             (set-atom! scare-timer scare-life)))))))
 
 (defsystem scare-countdown [dt]
-  (when (< 0 scare-timer)
-    (set-atom! scare-timer (- scare-timer 1))
-    (when (zero? scare-timer)
+  (when (< 0 (atom-val scare-timer))
+    (set-atom! scare-timer (- (atom-val scare-timer) 1))
+    (when (zero? (atom-val scare-timer))
       (let [s (nearest-tagged "scare" (f32 0.0) (f32 0.0) (f32 1000000.0))]
         (when (not= s -1)
           (despawn-entity s))))))

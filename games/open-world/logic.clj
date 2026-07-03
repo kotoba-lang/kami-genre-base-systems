@@ -49,7 +49,7 @@
       (let [hit (nearest-tagged "poi" (get-x p) (get-y p) discover-range)]
         (when (not= hit -1)
           (despawn-entity hit)
-          (set-atom! discovered (+ discovered 1)))))))
+          (set-atom! discovered (+ (atom-val discovered) 1)))))))
 
 ;; rarer landmark POI, on its own slower cadence, worth counting separately.
 (defsystem landmark-spawn [dt]
@@ -63,4 +63,4 @@
       (let [hit (nearest-tagged "landmark" (get-x p) (get-y p) discover-range)]
         (when (not= hit -1)
           (despawn-entity hit)
-          (set-atom! landmarks-found (+ landmarks-found 1)))))))
+          (set-atom! landmarks-found (+ (atom-val landmarks-found) 1)))))))

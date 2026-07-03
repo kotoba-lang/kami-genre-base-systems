@@ -68,13 +68,13 @@
 ;; weapon: only fires while charges remain, consumes one per shot.
 (defsystem weapon [dt]
   (when (zero? (mod (tick-n) fire-period))
-    (when (< 0 charges)
+    (when (< 0 (atom-val charges))
       (let [p (player)]
         (when (not= p -1)
           (let [hit (nearest-tagged "enemy" (get-x p) (get-y p) weapon-range)]
             (when (not= hit -1)
               (despawn-entity hit)
-              (set-atom! charges (- charges 1)))))))))
+              (set-atom! charges (- (atom-val charges) 1)))))))))
 
 ;; collecting salvage replenishes charges.
 (defsystem scavenge [dt]
@@ -83,8 +83,8 @@
       (let [hit (nearest-tagged "salvage" (get-x p) (get-y p) salvage-range)]
         (when (not= hit -1)
           (despawn-entity hit)
-          (set-atom! charges (+ charges salvage-yield))
-          (set-atom! total-salvaged (+ total-salvaged 1)))))))
+          (set-atom! charges (+ (atom-val charges) salvage-yield))
+          (set-atom! total-salvaged (+ (atom-val total-salvaged) 1)))))))
 
 (defsystem contact [dt]
   (let [p (player)]

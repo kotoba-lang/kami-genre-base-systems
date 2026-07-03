@@ -33,10 +33,10 @@
     (when (not= p -1)
       (let [g (nearest-tagged "guard" (get-x p) (get-y p) detect-range)]
         (if (not= g -1)
-          (when (< alert alert-max)
-            (set-atom! alert (+ alert 2)))
-          (when (< 0 alert)
-            (set-atom! alert (- alert 1))))))))
+          (when (< (atom-val alert) alert-max)
+            (set-atom! alert (+ (atom-val alert) 2)))
+          (when (< 0 (atom-val alert))
+            (set-atom! alert (- (atom-val alert) 1))))))))
 
 ;; win condition: reach the goal while alert stays below the threshold.
 ;; counts the completion, resets the player to start, and respawns the
@@ -45,9 +45,9 @@
   (let [p (player)]
     (when (not= p -1)
       (let [g (nearest-tagged "goal" (get-x p) (get-y p) goal-range)]
-        (when (and (not= g -1) (< alert alert-max))
+        (when (and (not= g -1) (< (atom-val alert) alert-max))
           (despawn-entity g)
-          (set-atom! completions (+ completions 1))
+          (set-atom! completions (+ (atom-val completions) 1))
           (set-position! p (f32 -400.0) (f32 0.0) (f32 0.0))
           (let [g2 (spawn-entity "goal")]
             (set-position! g2 (f32 400.0) (f32 0.0) (f32 0.0))))))))

@@ -53,17 +53,17 @@
       (when (not= b -1)
         (let [near (nearest-tagged "p1" (get-x b) (get-y b) goal-range)]
           (if (not= near -1)
-            (set-atom! score-p1 (+ score-p1 1))
+            (set-atom! score-p1 (+ (atom-val score-p1) 1))
             (let [near2 (nearest-tagged "p2-ai" (get-x b) (get-y b) goal-range)]
               (when (not= near2 -1)
-                (set-atom! score-p2 (+ score-p2 1))))))
+                (set-atom! score-p2 (+ (atom-val score-p2) 1))))))
         (set-position! b (f32 0.0) (f32 0.0) (f32 0.0))))))
 
 ;; match-point: first to match-target resets both scores for a new match.
 (defsystem match-check [dt]
-  (when (< match-target (+ score-p1 1))
+  (when (< match-target (+ (atom-val score-p1) 1))
     (set-atom! score-p1 0)
     (set-atom! score-p2 0))
-  (when (< match-target (+ score-p2 1))
+  (when (< match-target (+ (atom-val score-p2) 1))
     (set-atom! score-p1 0)
     (set-atom! score-p2 0)))

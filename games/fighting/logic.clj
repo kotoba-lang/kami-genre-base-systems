@@ -48,27 +48,27 @@
       (when (and (not= a -1) (not= b -1))
         (let [near (nearest-tagged "p2-ai" (get-x a) (get-y a) exchange-range)]
           (when (not= near -1)
-            (set-atom! health-p1 (- health-p1 1))
-            (set-atom! health-p2 (- health-p2 1))))))))
+            (set-atom! health-p1 (- (atom-val health-p1) 1))
+            (set-atom! health-p2 (- (atom-val health-p2) 1))))))))
 
 ;; reset when either side is depleted -- health restores, and the
 ;; depleted side's opponent earns a round win toward the match target.
 (defsystem round-reset [dt]
-  (when (< health-p1 1)
+  (when (< (atom-val health-p1) 1)
     (set-atom! health-p1 max-health)
     (set-atom! health-p2 max-health)
-    (set-atom! rounds-p2 (+ rounds-p2 1)))
-  (when (< health-p2 1)
+    (set-atom! rounds-p2 (+ (atom-val rounds-p2) 1)))
+  (when (< (atom-val health-p2) 1)
     (set-atom! health-p1 max-health)
     (set-atom! health-p2 max-health)
-    (set-atom! rounds-p1 (+ rounds-p1 1))))
+    (set-atom! rounds-p1 (+ (atom-val rounds-p1) 1))))
 
 ;; match win: first to rounds-to-win resets both round counters for a new
 ;; match.
 (defsystem match-check [dt]
-  (when (< rounds-to-win (+ rounds-p1 1))
+  (when (< rounds-to-win (+ (atom-val rounds-p1) 1))
     (set-atom! rounds-p1 0)
     (set-atom! rounds-p2 0))
-  (when (< rounds-to-win (+ rounds-p2 1))
+  (when (< rounds-to-win (+ (atom-val rounds-p2) 1))
     (set-atom! rounds-p1 0)
     (set-atom! rounds-p2 0)))

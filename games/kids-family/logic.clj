@@ -47,7 +47,7 @@
       (let [hit (nearest-tagged "treat" (get-x p) (get-y p) collect-range)]
         (when (not= hit -1)
           (despawn-entity hit)
-          (set-atom! collected (+ collected 1)))))))
+          (set-atom! collected (+ (atom-val collected) 1)))))))
 
 ;; companion follows the player at a gentle distance and can also collect
 ;; nearby treats itself.
@@ -64,4 +64,4 @@
       (let [hit (nearest-tagged "treat" (get-x c) (get-y c) collect-range)]
         (when (not= hit -1)
           (despawn-entity hit)
-          (set-atom! collected (+ collected 1)))))))
+          (set-atom! collected (+ (atom-val collected) 1)))))))

@@ -65,9 +65,9 @@
             (let [spark (spawn-entity "beat-spark")]
               (set-position! spark (get-x t) (get-y t) (f32 0.0))))
           (when (beat?)
-            (set-atom! combo (+ combo 1)))
+            (set-atom! combo (+ (atom-val combo) 1)))
           (when (beat?)
-            (when (< best-combo combo)
-              (set-atom! best-combo combo)))
+            (when (< (atom-val best-combo) (atom-val combo))
+              (set-atom! best-combo (atom-val combo))))
           (when (off-beat?)
             (set-atom! combo 0)))))))

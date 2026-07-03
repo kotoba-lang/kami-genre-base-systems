@@ -78,31 +78,31 @@
         (let [hit (nearest-tagged "elite" (get-x p) (get-y p) weapon-range-norm)]
           (when (not= hit -1)
             (despawn-entity hit)
-            (set-atom! elites-felled (+ elites-felled 1))
-            (when (< power power-max)
-              (set-atom! power (+ power 1))
-              (when (< power power-max)
-                (set-atom! power (+ power 1))))))))))
+            (set-atom! elites-felled (+ (atom-val elites-felled) 1))
+            (when (< (atom-val power) power-max)
+              (set-atom! power (+ (atom-val power) 1))
+              (when (< (atom-val power) power-max)
+                (set-atom! power (+ (atom-val power) 1))))))))))
 
 ;; super-timer counts down every tick while active; hitting zero ends it.
 (defsystem super-tick [dt]
-  (when (< 0 super-timer)
-    (set-atom! super-timer (- super-timer 1))))
+  (when (< 0 (atom-val super-timer))
+    (set-atom! super-timer (- (atom-val super-timer) 1))))
 
 ;; weapon: boosted range/fire-rate while super-timer is active, normal
 ;; otherwise -- two pre-defined constant sets, no dynamic scaling formula.
 (defsystem weapon [dt]
-  (let [period (if (< 0 super-timer) fire-period-boost fire-period-norm)
-        range  (if (< 0 super-timer) weapon-range-boost weapon-range-norm)]
+  (let [period (if (< 0 (atom-val super-timer)) fire-period-boost fire-period-norm)
+        range  (if (< 0 (atom-val super-timer)) weapon-range-boost weapon-range-norm)]
     (when (zero? (mod (tick-n) period))
       (let [p (player)]
         (when (not= p -1)
           (let [hit (nearest-tagged "enemy" (get-x p) (get-y p) range)]
             (when (not= hit -1)
               (despawn-entity hit)
-              (when (< power power-max)
-                (set-atom! power (+ power 1))
-                (when (= power power-max)
+              (when (< (atom-val power) power-max)
+                (set-atom! power (+ (atom-val power) 1))
+                (when (= (atom-val power) power-max)
                   (set-atom! super-timer super-duration)
                   (set-atom! power 0))))))))))
 

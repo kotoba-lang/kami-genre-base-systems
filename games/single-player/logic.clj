@@ -33,10 +33,10 @@
 ;; level: increases every level-up-period ticks, tightening spawn cadence.
 (defsystem progress [dt]
   (when (zero? (mod (tick-n) level-up-period))
-    (set-atom! level (+ level 1))))
+    (set-atom! level (+ (atom-val level) 1))))
 
 (defn spawn-period []
-  (let [tightened (- base-spawn-period level)]
+  (let [tightened (- base-spawn-period (atom-val level))]
     (if (< tightened 4) 4 tightened)))
 
 (defsystem spawn [dt]
@@ -61,12 +61,12 @@
 ;; boss milestone: once per multiple-of-3 level, spawn one boss (capped so
 ;; it can't retrigger every tick the mod happens to hold).
 (defsystem boss-spawn [dt]
-  (when (zero? (mod level 3))
-    (when (< 0 level)
-      (when (< bosses-spawned level)
+  (when (zero? (mod (atom-val level) 3))
+    (when (< 0 (atom-val level))
+      (when (< (atom-val bosses-spawned) (atom-val level))
         (let [b (spawn-entity "boss")]
           (set-position! b (f32 0.0) spawn-radius (f32 0.0))
-          (set-atom! bosses-spawned level))))))
+          (set-atom! bosses-spawned (atom-val level)))))))
 
 (defsystem boss-weapon [dt]
   (when (zero? (mod (tick-n) fire-period))

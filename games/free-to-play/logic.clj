@@ -62,35 +62,35 @@
   (when (zero? (mod (tick-n) fire-period))
     (let [p (player)]
       (when (not= p -1)
-        (let [range (if (< 0 buff-ticks-left) buffed-weapon-range base-weapon-range)
+        (let [range (if (< 0 (atom-val buff-ticks-left)) buffed-weapon-range base-weapon-range)
               hit (nearest-tagged "enemy" (get-x p) (get-y p) range)]
           (when (not= hit -1)
             (despawn-entity hit)
-            (set-atom! currency (+ currency 1))))))))
+            (set-atom! currency (+ (atom-val currency) 1))))))))
 
 (defsystem contact [dt]
   (let [p (player)]
     (when (not= p -1)
-      (let [range (if (< 0 permanent-upgrade) upgraded-contact-range base-contact-range)
+      (let [range (if (< 0 (atom-val permanent-upgrade)) upgraded-contact-range base-contact-range)
             touch (nearest-tagged "enemy" (get-x p) (get-y p) range)]
         (when (not= touch -1)
           (despawn-entity touch))))))
 
 ;; spending: at the threshold, auto-cash-in for a temporary range buff.
 (defsystem shop [dt]
-  (when (< buff-cost (+ currency 1))
-    (when (zero? buff-ticks-left)
-      (set-atom! currency (- currency buff-cost))
+  (when (< buff-cost (+ (atom-val currency) 1))
+    (when (zero? (atom-val buff-ticks-left))
+      (set-atom! currency (- (atom-val currency) buff-cost))
       (set-atom! buff-ticks-left buff-duration))))
 
 ;; the pricier permanent upgrade only auto-purchases once, and only after
 ;; the player has accumulated enough beyond the buff cost.
 (defsystem shop-permanent [dt]
-  (when (zero? permanent-upgrade)
-    (when (< upgrade-cost (+ currency 1))
-      (set-atom! currency (- currency upgrade-cost))
+  (when (zero? (atom-val permanent-upgrade))
+    (when (< upgrade-cost (+ (atom-val currency) 1))
+      (set-atom! currency (- (atom-val currency) upgrade-cost))
       (set-atom! permanent-upgrade 1))))
 
 (defsystem buff-decay [dt]
-  (when (< 0 buff-ticks-left)
-    (set-atom! buff-ticks-left (- buff-ticks-left 1))))
+  (when (< 0 (atom-val buff-ticks-left))
+    (set-atom! buff-ticks-left (- (atom-val buff-ticks-left) 1))))
