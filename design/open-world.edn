@@ -1,0 +1,18 @@
+;; Genre base: オープンワールド (Open World)
+{:genre/id :open-world
+ :genre/status :design-only
+ :genre/core-loop
+ ["a large flat 2D arena (no terrain streaming -- kami-terrain is
+   Rust-substrate, unreachable from kami-clj), free movement via axis"
+  "fixed \"point of interest\" entities scattered across the whole arena;
+   proximity despawns + increments a defatom discovery counter"
+  "no combat requirement -- exploration/discovery is the whole loop"]
+ :genre/controls {:buttons 1 :scheme ["movement only"]}
+ :genre/kami-engine
+ {:proven-vocab-used [:defatom :set-atom! :nearest-tagged :despawn-entity :set-position!]
+  :known-constraints
+  ["\"open world\" here means a large flat arena with scattered static
+    points of interest, NOT streaming terrain/biomes -- that fidelity does
+    not exist at the kami-clj logic level, only in Rust host code
+    (kami-terrain/kami-vegetation/kami-atmosphere)"]}
+ :games/dir "games/open-world"}

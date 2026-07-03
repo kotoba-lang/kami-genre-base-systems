@@ -1,0 +1,7 @@
+;; Genre base: インディーズ (Indie)
+{:genre/id :indie
+ :genre/status :not-applicable
+ :genre/note
+ "A publishing/production-scale category (independently produced, as
+  opposed to studio budget/team size), not a gameplay mechanic. It has no
+  distinct core loop. No games/ dir -- nothing honest to build."}

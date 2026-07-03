@@ -1,0 +1,12 @@
+;; Genre base: ポストアポカリプス (Post-Apocalyptic)
+{:genre/id :post-apocalyptic
+ :genre/status :setting-preset
+ :genre/note
+ "A narrative/visual SETTING, not a distinct core loop -- it's most honestly
+  expressed as a scarcity-tuning preset layered on top of another base
+  (single-player or open-world are the natural hosts: tighter spawn-period,
+  fewer/rarer point-of-interest resources, harsher survival numbers) rather
+  than a duplicated games/ directory with a copy-pasted mechanic. No
+  standalone games/ dir in this pass -- applying this preset to
+  single-player.edn's or open-world.edn's numeric tuning is the concrete
+  follow-up, not done here to avoid a near-empty duplicate."}
