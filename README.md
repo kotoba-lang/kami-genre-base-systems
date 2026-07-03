@@ -43,21 +43,39 @@ mechanic to hit 18/18 "real systems":
   vehicles) get the best honest gameplay-logic-only approximation using
   only tagged entities + positions, not full genre fidelity.
 
-## Status (this pass)
+## Status (updated)
 
-Real, verified `author.clj`+`logic.clj` pairs landed for: rhythm, puzzle,
-stealth, single-player, strategy, sports, horror, superhero (8/18 with
-runnable code, `clojure -M author.clj` verified for each, `logic.clj`
-constructs cross-checked against the proven vocabulary).
+**All 18/18 categories now have real, `clojure -M author.clj`-verified
+`author.clj`+`logic.clj` pairs.** 14 are genuine gameplay archetypes with a
+distinct core loop; 4 (modern-remake, free-to-play, indie, post-apocalyptic)
+are honestly-labelled supporting systems layered on another base, not
+fabricated mechanics for categories that aren't gameplay archetypes — see
+`design/*.edn` for each category's precise framing.
 
-Design-only (`design/*.edn`, no code yet) for: open-world,
-local-multiplayer, kids-family, relaxing, platformer, fighting (6/18).
+A maturity pass (ADR-2607031800) then deepened most systems with 1-3
+additional `defsystem`s / richer state beyond the bare minimal proving
+mechanic — e.g. rhythm gained a combo/streak counter, puzzle gained a
+second distinct level, stealth's binary detection became an escalating/
+decaying alert level, strategy gained a real win/lose condition, sports had
+a genuine dead-code bug fixed (a declared-but-never-incremented score
+counter, now backed by a real AI opponent completing the two-goal shape).
+`indie` was deliberately left at its original minimal-kernel shape — any
+further addition would work against its own stated purpose as the smallest
+possible starting point.
 
-N/A or preset-note only: modern-remake, free-to-play, indie,
-post-apocalyptic (4/18).
+A real finding from this pass: the "proven vocabulary" list above was
+empirically derived from what this session's reference games happened to
+demonstrate, not from the compiler's actual capabilities -- checking
+`kotoba-lang/engine`'s own `ast.cljc`/`codegen.cljc` source directly showed
+`*` (multiplication), `not`, `do`, `<=`/`>=`, and `and`/`or` are all real,
+supported emit targets, wider than the reference-game-grep method alone
+would suggest. Some of this repo's code (e.g. `local-multiplayer`'s
+precomputed `360` instead of a `*` call) predates that discovery and was
+left as-is rather than "simplified" under time pressure — both forms are
+equally correct, just differently verbose.
 
-Not attempted: WASM compilation (`kotoba-lang/engine`'s `compile-file`) for
-any of the 8 implemented systems — a real, valuable follow-up, out of scope
-for this pass given this session's established slow-build cost. `author.clj`
+Not yet attempted: WASM compilation (`kotoba-lang/engine`'s `compile-file`)
+for any of the 18 systems — a real, valuable follow-up, out of scope for
+this pass given this session's established slow-build cost. `author.clj`
 verification only confirms the datalevin→`scene.edn` authoring step works,
 not that `logic.clj` actually compiles to WASM.

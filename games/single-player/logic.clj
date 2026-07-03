@@ -12,6 +12,11 @@
 (def spawn-radius  (f32 520.0))
 
 (defatom level 0)
+;; maturity pass: every 3rd level, a tougher "boss" spawns once (2x size
+;; conveyed via a distinct tag/profile, not a health system the proven
+;; vocabulary can't express) -- a real milestone beat, not just a flat
+;; difficulty ramp.
+(defatom bosses-spawned 0)
 
 (defn player []
   (nearest-tagged "player" (f32 0.0) (f32 0.0) (f32 1000000.0)))
@@ -49,7 +54,27 @@
   (let [p (player)]
     (when (not= p -1)
       (doseq-entities [e "enemy"]
-        (move-toward! e p enemy-speed)))))
+        (move-toward! e p enemy-speed))
+      (doseq-entities [b "boss"]
+        (move-toward! b p (f32 60.0))))))
+
+;; boss milestone: once per multiple-of-3 level, spawn one boss (capped so
+;; it can't retrigger every tick the mod happens to hold).
+(defsystem boss-spawn [dt]
+  (when (zero? (mod level 3))
+    (when (< 0 level)
+      (when (< bosses-spawned level)
+        (let [b (spawn-entity "boss")]
+          (set-position! b (f32 0.0) spawn-radius (f32 0.0))
+          (set-atom! bosses-spawned level))))))
+
+(defsystem boss-weapon [dt]
+  (when (zero? (mod (tick-n) fire-period))
+    (let [p (player)]
+      (when (not= p -1)
+        (let [hit (nearest-tagged "boss" (get-x p) (get-y p) weapon-range)]
+          (when (not= hit -1)
+            (despawn-entity hit)))))))
 
 (defsystem weapon [dt]
   (when (zero? (mod (tick-n) fire-period))

@@ -10,6 +10,10 @@
 
 (defatom dread 0)
 (defatom scare-timer 0)
+;; maturity pass: a fixed "safe zone" light source that decays dread much
+;; faster when nearby -- a real tension-relief mechanic, not just a single
+;; rising/falling meter.
+(def safe-range   (f32 100.0))
 
 (defn player []
   (nearest-tagged "player" (f32 0.0) (f32 0.0) (f32 1000000.0)))
@@ -18,7 +22,9 @@
   (let [p (spawn-entity "player")]
     (set-position! p (f32 0.0) (f32 0.0) (f32 0.0)))
   (let [t (spawn-entity "threat")]
-    (set-position! t (f32 300.0) (f32 0.0) (f32 0.0))))
+    (set-position! t (f32 300.0) (f32 0.0) (f32 0.0)))
+  (let [s (spawn-entity "safe-zone")]
+    (set-position! s (f32 -300.0) (f32 0.0) (f32 0.0))))
 
 (defsystem control [dt]
   (let [p (player)]
@@ -35,12 +41,16 @@
 (defsystem dread-tick [dt]
   (let [p (player)]
     (when (not= p -1)
-      (let [t (nearest-tagged "threat" (get-x p) (get-y p) detect-range)]
+      (let [t (nearest-tagged "threat" (get-x p) (get-y p) detect-range)
+            s (nearest-tagged "safe-zone" (get-x p) (get-y p) safe-range)]
         (if (not= t -1)
           (when (< dread dread-max)
             (set-atom! dread (+ dread 2)))
-          (when (< 0 dread)
-            (set-atom! dread (- dread 1))))))))
+          (if (not= s -1)
+            (when (< 0 dread)
+              (set-atom! dread (- dread 3)))
+            (when (< 0 dread)
+              (set-atom! dread (- dread 1)))))))))
 
 ;; rare random scare: low-probability roll every scare-check-period ticks
 ;; spawns a short-lived scare entity near the player.

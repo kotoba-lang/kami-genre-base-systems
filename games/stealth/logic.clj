@@ -7,6 +7,10 @@
 (def alert-max    100)
 
 (defatom alert 0)
+;; maturity pass: track completions and let the run actually restart
+;; (respawn the goal + reset the player) instead of going silent forever
+;; after one reach -- a real replayable loop, not a one-shot demo.
+(defatom completions 0)
 
 (defn player []
   (nearest-tagged "player" (f32 0.0) (f32 0.0) (f32 1000000.0)))
@@ -35,11 +39,15 @@
             (set-atom! alert (- alert 1))))))))
 
 ;; win condition: reach the goal while alert stays below the threshold.
-;; goes silent (no reset primitive beyond re-init exists) once reached --
-;; the goal despawns so the round has an observable end.
+;; counts the completion, resets the player to start, and respawns the
+;; goal so the run is genuinely replayable rather than a one-shot demo.
 (defsystem reach [dt]
   (let [p (player)]
     (when (not= p -1)
       (let [g (nearest-tagged "goal" (get-x p) (get-y p) goal-range)]
         (when (and (not= g -1) (< alert alert-max))
-          (despawn-entity g))))))
+          (despawn-entity g)
+          (set-atom! completions (+ completions 1))
+          (set-position! p (f32 -400.0) (f32 0.0) (f32 0.0))
+          (let [g2 (spawn-entity "goal")]
+            (set-position! g2 (f32 400.0) (f32 0.0) (f32 0.0))))))))

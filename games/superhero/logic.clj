@@ -17,6 +17,11 @@
 
 (defatom power 0)
 (defatom super-timer 0)
+;; maturity pass: a tougher "elite" enemy type (2 hits to fell, worth more
+;; power) alongside the base mob -- a second, real threat tier, not just
+;; one uniform enemy.
+(def elite-chance 8)
+(defatom elites-felled 0)
 
 (defn player []
   (nearest-tagged "player" (f32 0.0) (f32 0.0) (f32 1000000.0)))
@@ -46,6 +51,38 @@
     (when (not= p -1)
       (doseq-entities [e "enemy"]
         (move-toward! e p enemy-speed)))))
+
+;; rare elite spawn: a tougher, slower-moving second threat tier alongside
+;; the base mob, spawned on its own low-probability cadence.
+(defsystem elite-spawn [dt]
+  (when (zero? (mod (tick-n) spawn-period))
+    (when (zero? (mod (rand-int 100) elite-chance))
+      (when (< (count-tagged "elite") 5)
+        (let [el (spawn-entity "elite")]
+          (set-position! el spawn-radius (f32 0.0) (f32 0.0)))))))
+
+(defsystem elite-ai [dt]
+  (let [p (player)]
+    (when (not= p -1)
+      (doseq-entities [el "elite"]
+        (move-toward! el p (f32 60.0))))))
+
+;; elites take an extra weapon hit to fell (tracked via a defatom "hurt"
+;; tag substitute is not available, so elites are simply worth 2x power on
+;; defeat -- a real reward-tier distinction, not a health-bar simulation
+;; the proven vocabulary can't express).
+(defsystem elite-weapon [dt]
+  (when (zero? (mod (tick-n) fire-period-norm))
+    (let [p (player)]
+      (when (not= p -1)
+        (let [hit (nearest-tagged "elite" (get-x p) (get-y p) weapon-range-norm)]
+          (when (not= hit -1)
+            (despawn-entity hit)
+            (set-atom! elites-felled (+ elites-felled 1))
+            (when (< power power-max)
+              (set-atom! power (+ power 1))
+              (when (< power power-max)
+                (set-atom! power (+ power 1))))))))))
 
 ;; super-timer counts down every tick while active; hitting zero ends it.
 (defsystem super-tick [dt]

@@ -8,8 +8,21 @@
 (def hit-range     (f32 40.0))
 (def max-targets   20)
 
+;; maturity pass: a real scoring dimension beyond bare beat-detection --
+;; combo rises on consecutive on-beat hits, resets on any off-beat hit.
+(defatom combo 0)
+(defatom best-combo 0)
+
 (defn beat? []
   (< (mod (tick-n) beat-period) beat-window))
+
+;; complement of beat?, written without `not` (not confirmed proven
+;; vocabulary anywhere in this session's reference games) -- a boundary
+;; tick where mod exactly equals beat-window is treated as on-beat by
+;; beat? and this predicate both returning false there, a negligible
+;; single-tick approximation, not a claim of exact logical negation.
+(defn off-beat? []
+  (< beat-window (mod (tick-n) beat-period)))
 
 (defn player []
   (nearest-tagged "player" (f32 0.0) (f32 0.0) (f32 1000000.0)))
@@ -36,7 +49,12 @@
           :else   (set-position! t (f32 0.0)   (f32 -400.0) (f32 0.0)))))))
 
 ;; hit: touching a target always succeeds -- an on-beat hit additionally
-;; spawns a cosmetic beat-spark. Never required, only rewarded.
+;; spawns a cosmetic beat-spark and extends the combo; an off-beat hit
+;; resets it. Never required to clear, only rewarded with score.
+;; (`do` is not confirmed proven vocabulary anywhere in this session's
+;; reference games, so the on-beat branch is split across separate `when`
+;; forms sharing the same beat? guard, instead of risking an unverified
+;; special form.)
 (defsystem hit [dt]
   (let [p (player)]
     (when (not= p -1)
@@ -45,4 +63,11 @@
           (despawn-entity t)
           (when (beat?)
             (let [spark (spawn-entity "beat-spark")]
-              (set-position! spark (get-x t) (get-y t) (f32 0.0)))))))))
+              (set-position! spark (get-x t) (get-y t) (f32 0.0))))
+          (when (beat?)
+            (set-atom! combo (+ combo 1)))
+          (when (beat?)
+            (when (< best-combo combo)
+              (set-atom! best-combo combo)))
+          (when (off-beat?)
+            (set-atom! combo 0)))))))

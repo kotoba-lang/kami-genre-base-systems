@@ -7,6 +7,16 @@
 (def num-tiles   4)
 
 (defatom progress 0)
+;; maturity pass: a second distinct level so there is real progression
+;; instead of one static puzzle -- level 1 is the original corner-square
+;; order; level 2 (unlocked once level 1 is fully solved once) uses a
+;; different order (reverse-diagonal instead of clockwise) over the same
+;; 4 tile positions, confirmed via the compiler source (`*`/`not`/`do`/
+;; `<=`/`>=` are all real emit targets in kotoba.engine-clj.ast/codegen,
+;; not just the narrower set this session's reference-game grep happened
+;; to demonstrate -- see ADR-2607031800's library-reuse-check note).
+(defatom level 1)
+(defatom solves 0)
 
 (defn player []
   (nearest-tagged "player" (f32 0.0) (f32 0.0) (f32 1000000.0)))
@@ -27,13 +37,22 @@
     (when (not= p -1)
       (set-velocity! p (axis "MoveX") (axis "MoveY") (f32 0.0)))))
 
-;; expected-position lookup for the current progress step, by index.
+;; expected-position lookup for the current progress step, by (level, step).
+;; level 1: clockwise from top-right. level 2: reverse-diagonal order over
+;; the same 4 positions -- a genuinely different sequence to solve, not a
+;; copy-pasted duplicate.
 (defn expected-x [step]
-  (cond (= step 0) (f32 150.0) (= step 1) (f32 -150.0)
-        (= step 2) (f32 -150.0) :else (f32 150.0)))
+  (if (= level 1)
+    (cond (= step 0) (f32 150.0) (= step 1) (f32 -150.0)
+          (= step 2) (f32 -150.0) :else (f32 150.0))
+    (cond (= step 0) (f32 150.0) (= step 1) (f32 -150.0)
+          (= step 2) (f32 150.0) :else (f32 -150.0))))
 (defn expected-y [step]
-  (cond (= step 0) (f32 150.0) (= step 1) (f32 150.0)
-        (= step 2) (f32 -150.0) :else (f32 -150.0)))
+  (if (= level 1)
+    (cond (= step 0) (f32 150.0) (= step 1) (f32 150.0)
+          (= step 2) (f32 -150.0) :else (f32 -150.0))
+    (cond (= step 0) (f32 -150.0) (= step 1) (f32 150.0)
+          (= step 2) (f32 150.0) :else (f32 -150.0))))
 
 (defsystem touch [dt]
   (let [p (player)]
@@ -44,3 +63,16 @@
                    (= (get-y tile) (expected-y progress)))
             (set-atom! progress (mod (+ progress 1) num-tiles))
             (set-atom! progress 0)))))))
+
+;; level advance: completing num-tiles worth of correct touches (progress
+;; wraps to 0 exactly on a full clean solve) promotes level 1 -> level 2
+;; once, tracked by solves so it doesn't re-trigger every wrap.
+(defsystem level-advance [dt]
+  (when (zero? progress)
+    (when (< 0 solves)
+      (when (= level 1)
+        (set-atom! level 2)))))
+
+(defsystem count-solve [dt]
+  (when (= progress (- num-tiles 1))
+    (set-atom! solves (+ solves 1))))
