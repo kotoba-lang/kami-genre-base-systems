@@ -1,5 +1,7 @@
 # kami-genre-base-systems
 
+> **Note**: `gftdcojp/isekai-network` (referenced below) is archived — its content moved to `gftdcojp/network-isekai/public/games/gftd/shiro-pico/`.
+
 Base/foundation gameplay systems, one per genre category from a PlayStation
 Store-style genre-browse taxonomy — **generic genre archetypes only**, not
 tied to any specific commercial title's characters, art, story, or exact
