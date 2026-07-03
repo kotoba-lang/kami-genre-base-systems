@@ -10,8 +10,10 @@ strictly within the kami-clj compiler subset's **proven vocabulary** —
 `despawn-entity`, `set-position!`, `set-velocity!`, `get-x`/`get-y`,
 `nearest-tagged`, `count-tagged`, `doseq-entities`, `move-toward!`, `axis`,
 `tick-n`, `mod`, `rand-int`, `zero?`, `</=/not=`, `defatom`/`set-atom!` —
-confirmed working end-to-end via `kotoba-lang/engine` (compiler) and
-`kotoba-lang/kami-script-runtime-rs` (WASM host) this session.
+confirmed working end-to-end via
+[`kami-engine-clj`](https://github.com/kotoba-lang/kami-engine/tree/main/kami-engine-clj)
+(compiler, consolidated from a short-lived standalone `kotoba-lang/engine`
+repo) and `kotoba-lang/kami-script-runtime-rs` (WASM host) this session.
 
 ## Honest scope
 
