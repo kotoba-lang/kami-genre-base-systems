@@ -83,3 +83,34 @@ for any of the 18 systems — a real, valuable follow-up, out of scope for
 this pass given this session's established slow-build cost. `author.clj`
 verification only confirms the datalevin→`scene.edn` authoring step works,
 not that `logic.clj` actually compiles to WASM.
+
+## `platformer` — action-systems layer (2026-07-18)
+
+`design/platformer.edn`'s `:genre/status` moved from `:design-only` to
+`:implemented`: `games/platformer/{src,test}` now also carries a second,
+decoupled artifact alongside its original kami-clj-subset `logic.clj`
+(the honest sequential-waypoint-traversal loop, unchanged) — a pure,
+portable `.cljc` **action-systems layer** for a Castlevania-style 2D
+side-scroller, built for a different host (`network-isekai` /
+`kotoba.kami-host`'s ECS), not for `kami-engine-clj`/WASM:
+
+- `kami-genre-base-systems.platformer.camera` — room-lock camera
+  (`clamp-camera`, `step-camera`, `start-room-transition`)
+- `kami-genre-base-systems.platformer.weapon` — whip attack FSM
+  (`step-whip`, `whip-hitbox`), sub-weapon hearts-gated fire/cooldown
+  (`try-fire-sub-weapon`, `step-sub-weapon`), and the item-crash combo
+  (`item-crash?`, `try-item-crash`)
+- `kami-genre-base-systems.platformer.style` — combo/style-meter rank
+  (`register-hit`, `register-damage-taken`, `step-style`, `meter->rank`)
+- `kami-genre-base-systems.platformer.boss` — HP-threshold phase/attack
+  framework (`step-boss-phase`)
+- `kami-genre-base-systems.platformer.stairs` — a decoupled extension
+  point (`{:in-zone? ... :resolve ...}`) so a host can plug in
+  `physics-2d`'s stair/diagonal-movement work without this repo
+  depending on `physics-2d` directly
+
+Run tests: `cd games/platformer && clojure -M:test`. This layer is
+**not** exercised by `scripts/verify` (that pipeline is specific to
+compiling `logic.clj` through `kami-engine-clj` and executing it via
+`kami-host` — a different language subset and a different runtime
+entirely; there is no equivalent WASM path for this layer yet).
