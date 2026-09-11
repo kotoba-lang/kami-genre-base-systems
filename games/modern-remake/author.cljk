@@ -1,5 +1,5 @@
 ;; author.clj -- kami-genre-base-systems / modern-remake, scene authoring.
-;;   clojure -M author.clj
+;;   kbb -M author.clj
 ;;
 ;; NOTE: "modern-remake" is not a gameplay archetype (see design/
 ;; modern-remake.edn) -- this is a real, reusable TUNING-PRESET system, not

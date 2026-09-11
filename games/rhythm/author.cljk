@@ -1,6 +1,6 @@
 ;; author.clj -- kami-genre-base-systems / rhythm, scene authoring.
 ;; Faithful reskin of kami-clj-play/games/survivors/author.clj (ADR-0036).
-;;   clojure -M author.clj
+;;   kbb -M author.clj
 
 (require '[datalevin.core :as d]
          '[clojure.pprint :as pp])

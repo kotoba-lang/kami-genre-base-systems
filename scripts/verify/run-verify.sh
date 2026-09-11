@@ -16,7 +16,7 @@ cd "$(dirname "$0")"
 KAMI_HOST_REPO="${1:-${KAMI_HOST_REPO:-../../../kami-script-runtime-rs}}"
 
 echo "== stage 1: compile every games/{genre}/logic.clj via the real CLJS path =="
-npx shadow-cljs compile verify   # builds out/verify.js (a node-script bundle)
+amu compile --target wasm32-browser verify   # builds out/verify.js (a node-script bundle)
 node out/verify.js               # -main actually runs kotoba.engine-clj + writes out/*.wasm
 
 echo

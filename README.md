@@ -49,7 +49,7 @@ mechanic to hit 18/18 "real systems":
 
 ## Status (updated)
 
-**All 18/18 categories now have real, `clojure -M author.clj`-verified
+**All 18/18 categories now have real, `kbb -M author.clj`-verified
 `author.clj`+`logic.clj` pairs.** 14 are genuine gameplay archetypes with a
 distinct core loop; 4 (modern-remake, free-to-play, indie, post-apocalyptic)
 are honestly-labelled supporting systems layered on another base, not
@@ -109,7 +109,7 @@ side-scroller, built for a different host (`network-isekai` /
   `physics-2d`'s stair/diagonal-movement work without this repo
   depending on `physics-2d` directly
 
-Run tests: `cd games/platformer && clojure -M:test`. This layer is
+Run tests: `cd games/platformer && kbb -M:test`. This layer is
 **not** exercised by `scripts/verify` (that pipeline is specific to
 compiling `logic.clj` through `kami-engine-clj` and executing it via
 `kami-host` — a different language subset and a different runtime
