@@ -1,5 +1,5 @@
 ;; author.clj -- kami-genre-base-systems / strategy, scene authoring.
-;;   clojure -M author.clj
+;;   kbb -M author.clj
 
 (require '[datalevin.core :as d]
          '[clojure.pprint :as pp])

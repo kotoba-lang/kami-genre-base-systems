@@ -1,5 +1,5 @@
 ;; author.clj -- kami-genre-base-systems / post-apocalyptic, scene authoring.
-;;   clojure -M author.clj
+;;   kbb -M author.clj
 ;;
 ;; NOTE: "post-apocalyptic" is a narrative/visual setting, not a distinct
 ;; core loop (see design/post-apocalyptic.edn) -- this is a real resource-

@@ -1,5 +1,5 @@
 ;; author.clj -- kami-genre-base-systems / free-to-play, scene authoring.
-;;   clojure -M author.clj
+;;   kbb -M author.clj
 ;;
 ;; NOTE: "free-to-play" is a business model, not a gameplay archetype (see
 ;; design/free-to-play.edn) -- this is a real, reusable soft-CURRENCY/economy

@@ -1,4 +1,4 @@
-;; test_runner.clj -- entrypoint for `clojure -M:test` (see deps.edn).
+;; test_runner.clj -- entrypoint for `kbb -M:test` (see deps.edn).
 ;; JVM-only by nature of being a CLI entrypoint (same spirit as this
 ;; repo's existing author.clj scripts) -- the systems under test
 ;; themselves (camera/weapon/style/boss/stairs .cljc) are plain portable
